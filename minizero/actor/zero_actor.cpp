@@ -199,8 +199,10 @@ void ZeroActor::addNoiseToNodeChildren(MCTSNode* node)
         std::vector<float> dirichlet_noise = utils::Random::randDirichlet(config::actor_dirichlet_noise_alpha, node->getNumChildren());
         for (int i = 0; i < node->getNumChildren(); ++i) {
             MCTSNode* child = node->getChild(i);
+            assert(child->getPolicy() >= 0 && child->getPolicy() <= 1);
             child->setPolicyNoise(dirichlet_noise[i]);
             child->setPolicy((1 - epsilon) * child->getPolicy() + epsilon * dirichlet_noise[i]);
+            assert(child->getPolicy() >= 0 && child->getPolicy() <= 1);
         }
     } else if (config::actor_use_gumbel_noise) {
         std::vector<float> gumbel_noise = utils::Random::randGumbel(node->getNumChildren());
@@ -232,9 +234,9 @@ std::vector<MCTS::ActionCandidate> ZeroActor::calculateMuZeroActionPolicy(MCTSNo
 {
     assert(muzero_network_);
     std::vector<MCTS::ActionCandidate> action_candidates;
-    env::Player turn = leaf_node->getAction().nextPlayer();
     for (size_t action_id = 0; action_id < muzero_output->policy_.size(); ++action_id) {
-        const Action action(action_id, turn);
+        env::Player turn = static_cast<env::Player>(action_id / env_.getPolicySize() + 1);
+        const Action action(action_id % env_.getPolicySize(), turn);
         if (leaf_node == getMCTS()->getRootNode() && !env_.isLegalAction(action)) { continue; }
         action_candidates.push_back(MCTS::ActionCandidate(action, muzero_output->policy_[action_id], muzero_output->policy_logits_[action_id]));
     }

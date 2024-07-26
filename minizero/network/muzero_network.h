@@ -19,7 +19,7 @@ public:
     std::vector<float> policy_logits_;
     std::vector<float> hidden_state_;
 
-    MuZeroNetworkOutput(int policy_size, int hidden_state_size)
+    MuZeroNetworkOutput(int policy_size, int hidden_state_size) // here!!
     {
         value_ = 0.0f;
         reward_ = 0.0f;
@@ -137,7 +137,7 @@ protected:
         assert(!forward_result.contains("reward") || (forward_result.contains("reward") && reward_output.numel() == batch_size * getDiscreteValueSize()));
         assert(hidden_state_output.numel() == batch_size * getNumHiddenChannels() * getHiddenChannelHeight() * getHiddenChannelWidth());
 
-        const int policy_size = getActionSize();
+        const int policy_size = getActionSize() * 2;
         const int hidden_state_size = getNumHiddenChannels() * getHiddenChannelHeight() * getHiddenChannelWidth();
         std::vector<std::shared_ptr<NetworkOutput>> network_outputs;
         for (int i = 0; i < batch_size; ++i) {

@@ -210,6 +210,7 @@ bool GoEnv::isLegalAction(const GoAction& action) const
     assert(action.getActionID() >= 0 && action.getActionID() <= board_size_ * board_size_);
     assert(action.getPlayer() == Player::kPlayer1 || action.getPlayer() == Player::kPlayer2);
 
+    if (action.getPlayer() != turn_) { return false; }
     if (isPassAction(action)) { return true; }
 
     const int position = action.getActionID();

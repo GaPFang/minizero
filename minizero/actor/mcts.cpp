@@ -1,4 +1,5 @@
 #include "mcts.h"
+#include <iostream>
 
 namespace minizero::actor {
 

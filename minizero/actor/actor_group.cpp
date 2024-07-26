@@ -177,7 +177,7 @@ void ActorGroup::createActors()
 {
     assert(getSharedData()->networks_.size() > 0);
     std::shared_ptr<Network>& network = getSharedData()->networks_[0];
-    uint64_t tree_node_size = static_cast<uint64_t>(config::actor_num_simulation + 1) * network->getActionSize();
+    uint64_t tree_node_size = static_cast<uint64_t>(config::actor_num_simulation + 1) * network->getActionSize() * 2;
     for (int i = 0; i < config::zero_num_parallel_games; ++i) {
         getSharedData()->actors_.emplace_back(createActor(tree_node_size, getSharedData()->networks_[i % getSharedData()->networks_.size()]));
     }

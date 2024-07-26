@@ -27,13 +27,13 @@ class MinizeroDadaLoader:
         self.value_accumulator = np.ones(1) if py.get_nn_discrete_value_size() == 1 else np.arange(-int(py.get_nn_discrete_value_size() / 2), int(py.get_nn_discrete_value_size() / 2) + 1)
         if py.get_nn_type_name() == "alphazero":
             self.action_features = None
-            self.policy = np.zeros(py.get_batch_size() * py.get_nn_action_size(), dtype=np.float32)
+            self.policy = np.zeros(py.get_batch_size() * py.get_nn_action_size() * py.get_nn_num_player(), dtype=np.float32)
             self.value = np.zeros(py.get_batch_size() * py.get_nn_discrete_value_size(), dtype=np.float32)
             self.reward = None
         else:
             self.action_features = np.zeros(py.get_batch_size() * py.get_muzero_unrolling_step() * py.get_nn_num_action_feature_channels()
                                             * py.get_nn_hidden_channel_height() * py.get_nn_hidden_channel_width(), dtype=np.float32)
-            self.policy = np.zeros(py.get_batch_size() * (py.get_muzero_unrolling_step() + 1) * py.get_nn_action_size(), dtype=np.float32)
+            self.policy = np.zeros(py.get_batch_size() * (py.get_muzero_unrolling_step() + 1) * py.get_nn_action_size() * py.get_nn_num_player(), dtype=np.float32)
             self.value = np.zeros(py.get_batch_size() * (py.get_muzero_unrolling_step() + 1) * py.get_nn_discrete_value_size(), dtype=np.float32)
             self.reward = np.zeros(py.get_batch_size() * py.get_muzero_unrolling_step() * py.get_nn_discrete_value_size(), dtype=np.float32)
 
@@ -55,7 +55,7 @@ class MinizeroDadaLoader:
                                                                                                                  py.get_nn_num_action_feature_channels(),
                                                                                                                  py.get_nn_hidden_channel_height(),
                                                                                                                  py.get_nn_hidden_channel_width()).to(device)
-        policy = torch.FloatTensor(self.policy).view(py.get_batch_size(), -1, py.get_nn_action_size()).to(device)
+        policy = torch.FloatTensor(self.policy).view(py.get_batch_size(), -1, py.get_nn_action_size() * py.get_nn_num_player()).to(device)
         value = torch.FloatTensor(self.value).view(py.get_batch_size(), -1, py.get_nn_discrete_value_size()).to(device)
         reward = None if self.reward is None else torch.FloatTensor(self.reward).view(py.get_batch_size(), -1, py.get_nn_discrete_value_size()).to(device)
         loss_scale = torch.FloatTensor(self.loss_scale / np.amax(self.loss_scale)).to(device)
