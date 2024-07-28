@@ -1,6 +1,7 @@
 #pragma once
 
 #include "environment.h"
+#include "mcts.h"
 #include "network.h"
 #include "search.h"
 #include <memory>
@@ -41,6 +42,8 @@ public:
     virtual std::string getSearchInfo() const = 0;
     virtual void setNetwork(const std::shared_ptr<network::Network>& network) = 0;
     virtual std::shared_ptr<Search> createSearch() = 0;
+    std::shared_ptr<MCTS> getMCTS() { return std::static_pointer_cast<MCTS>(search_); }
+    const std::shared_ptr<MCTS> getMCTS() const { return std::static_pointer_cast<MCTS>(search_); }
 
 protected:
     virtual std::vector<std::pair<std::string, std::string>> getActionInfo() const;

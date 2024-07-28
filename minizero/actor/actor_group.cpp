@@ -118,7 +118,16 @@ void SlaveThread::handleSearchDone(int actor_id)
     if (!actor->isResign()) { actor->act(actor->getSearchAction()); }
     bool is_endgame = (actor->isResign() || actor->isEnvTerminal());
     bool display_game = (actor_id == 0 && (config::actor_num_simulation >= 50 || (config::actor_num_simulation < 50 && is_endgame)));
-    if (display_game) { std::cerr << actor->getEnvironment().toString() << actor->getSearchInfo() << std::endl; }
+    if (display_game) {
+        std::cerr << actor->getEnvironment().toString() << actor->getSearchInfo() << std::endl;
+        getSharedData()->legal_node_counts_.push_back(actor->getMCTS()->getLegalNodeCount());
+        std::cerr << "Legal node counts: " << std::endl;
+        for (int i = 0; i < static_cast<int>(getSharedData()->legal_node_counts_.size()); ++i) {
+            if (i % config::zero_num_games_per_iteration == 0) { std::cerr << (i / config::zero_num_games_per_iteration + 1) << ": "; }
+            std::cerr << getSharedData()->legal_node_counts_[i] << ((i == static_cast<int>(getSharedData()->legal_node_counts_.size()) - 1 || i % config::zero_num_games_per_iteration == config::zero_num_games_per_iteration - 1) ? "\n" : " ");
+        }
+        std::cerr << std::endl;
+    }
     if (is_endgame) {
         getSharedData()->outputGame(actor);
         actor->reset();

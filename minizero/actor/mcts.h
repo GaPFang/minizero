@@ -27,6 +27,7 @@ public:
     bool displayInTreeLog() const override { return count_ > 0; }
 
     // setter
+    inline void setIsLegal(bool is_legal) { is_legal_ = is_legal; }
     inline void setHiddenStateDataIndex(int hidden_state_data_index) { hidden_state_data_index_ = hidden_state_data_index; }
     inline void setMean(float mean) { mean_ = mean; }
     inline void setCount(float count) { count_ = count; }
@@ -40,6 +41,7 @@ public:
     inline void setFirstChild(MCTSNode* first_child) { TreeNode::setFirstChild(first_child); }
 
     // getter
+    inline bool getIsLegal() const { return is_legal_; }
     inline int getHiddenStateDataIndex() const { return hidden_state_data_index_; }
     inline float getMean() const { return mean_; }
     inline float getCount() const { return count_; }
@@ -53,6 +55,7 @@ public:
     inline virtual MCTSNode* getChild(int index) const override { return (index < num_children_ ? static_cast<MCTSNode*>(first_child_) + index : nullptr); }
 
 protected:
+    bool is_legal_;
     int hidden_state_data_index_;
     float mean_;
     float count_;
@@ -96,6 +99,8 @@ public:
     virtual void expand(MCTSNode* leaf_node, const std::vector<ActionCandidate>& action_candidates);
     virtual void backup(const std::vector<MCTSNode*>& node_path, const float value, const float reward = 0.0f);
 
+    void increaseLegalNodeCount() { ++legal_node_count_; }
+    inline int getLegalNodeCount() const { return legal_node_count_; }
     inline MCTSNode* allocateNodes(int size) { return static_cast<MCTSNode*>(Tree::allocateNodes(size)); }
     inline int getNumSimulation() const { return getRootNode()->getCount(); }
     inline bool reachMaximumSimulation() const { return (getNumSimulation() == config::actor_num_simulation + 1); }
@@ -107,6 +112,8 @@ public:
     inline const std::map<float, int>& getTreeValueBound() const { return tree_value_bound_; }
 
 protected:
+    int legal_node_count_;
+
     TreeNode* createTreeNodes(uint64_t tree_node_size) override { return new MCTSNode[tree_node_size]; }
     TreeNode* getNodeIndex(int index) override { return getRootNode() + index; }
 

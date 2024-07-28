@@ -22,6 +22,7 @@ public:
     bool do_cpu_job_;
     int actor_index_;
     std::mutex mutex_;
+    std::vector<int> legal_node_counts_;
     std::vector<std::shared_ptr<BaseActor>> actors_;
     std::vector<std::shared_ptr<network::Network>> networks_;
     std::vector<std::vector<std::shared_ptr<network::NetworkOutput>>> network_outputs_;

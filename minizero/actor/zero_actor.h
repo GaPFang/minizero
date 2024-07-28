@@ -41,8 +41,6 @@ public:
     std::string getSearchInfo() const override { return mcts_search_data_.search_info_; }
     void setNetwork(const std::shared_ptr<network::Network>& network) override;
     std::shared_ptr<Search> createSearch() override { return std::make_shared<MCTS>(tree_node_size_); }
-    std::shared_ptr<MCTS> getMCTS() { return std::static_pointer_cast<MCTS>(search_); }
-    const std::shared_ptr<MCTS> getMCTS() const { return std::static_pointer_cast<MCTS>(search_); }
 
 protected:
     std::vector<std::pair<std::string, std::string>> getActionInfo() const override;
