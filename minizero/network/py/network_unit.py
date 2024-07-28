@@ -85,3 +85,23 @@ class DiscreteValueNetwork(nn.Module):
         x = F.relu(x)
         x = self.fc2(x)
         return x
+
+
+class SwitchNetwork(nn.Module):  # 0: not switch; 1: switch
+    def __init__(self, num_channels, channel_height, channel_width):
+        super(SwitchNetwork, self).__init__()
+        self.conv = nn.Conv2d(num_channels, 1, kernel_size=1)
+        self.bn = nn.BatchNorm2d(1)
+        self.fc = nn.Linear(channel_height * channel_width, 1)
+        self.channel_height = channel_height
+        self.channel_width = channel_width
+        self.sigmoid = nn.Sigmoid()
+
+    def forward(self, x):
+        x = self.conv(x)
+        x = self.bn(x)
+        x = F.relu(x)
+        x = x.view(-1, self.channel_height * self.channel_width)
+        x = self.fc(x)
+        x = self.sigmoid(x)
+        return x.squeeze()

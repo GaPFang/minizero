@@ -232,7 +232,7 @@ std::vector<MCTS::ActionCandidate> ZeroActor::calculateMuZeroActionPolicy(MCTSNo
 {
     assert(muzero_network_);
     std::vector<MCTS::ActionCandidate> action_candidates;
-    env::Player turn = leaf_node->getAction().nextPlayer();
+    env::Player turn = muzero_output->switch_ ? leaf_node->getAction().nextPlayer() : leaf_node->getAction().getPlayer();
     for (size_t action_id = 0; action_id < muzero_output->policy_.size(); ++action_id) {
         const Action action(action_id, turn);
         if (leaf_node == getMCTS()->getRootNode() && !env_.isLegalAction(action)) { continue; }
