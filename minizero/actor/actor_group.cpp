@@ -120,11 +120,17 @@ void SlaveThread::handleSearchDone(int actor_id)
     bool display_game = (actor_id == 0 && (config::actor_num_simulation >= 50 || (config::actor_num_simulation < 50 && is_endgame)));
     if (display_game) {
         std::cerr << actor->getEnvironment().toString() << actor->getSearchInfo() << std::endl;
-        getSharedData()->legal_node_counts_.push_back(actor->getMCTS()->getLegalNodeCount());
-        std::cerr << "Legal node counts: " << std::endl;
-        for (int i = 0; i < static_cast<int>(getSharedData()->legal_node_counts_.size()); ++i) {
-            if (i % config::zero_num_games_per_iteration == 0) { std::cerr << (i / config::zero_num_games_per_iteration + 1) << ": "; }
-            std::cerr << getSharedData()->legal_node_counts_[i] << ((i == static_cast<int>(getSharedData()->legal_node_counts_.size()) - 1 || i % config::zero_num_games_per_iteration == config::zero_num_games_per_iteration - 1) ? "\n" : " ");
+        getSharedData()->illegal_player_ratios_[getSharedData()->iteration_ - 1].push_back(actor->getMCTS()->getIllegalPlayerNodeCount() / static_cast<float>(actor->getMCTS()->getLegalParentNodeCount()));
+        std::cerr << "illegal player ratio: " << actor->getMCTS()->getIllegalPlayerNodeCount() << " / " << actor->getMCTS()->getLegalParentNodeCount() << " %" << std::endl;
+        std::cerr << "illegal player ratios: " << std::endl;
+        for (int i = 0; i < getSharedData()->iteration_; i++) {
+            std::cerr << "  Iteration " << (i + 1) << ": ";
+            if (i + 1 < getSharedData()->iteration_) {
+                std::cerr << std::accumulate(getSharedData()->illegal_player_ratios_[i].begin(), getSharedData()->illegal_player_ratios_[i].end(), 0.0f) / getSharedData()->illegal_player_ratios_[i].size() * 100 << "% ";
+            } else {
+                for (int j = 0; j < static_cast<int>(getSharedData()->illegal_player_ratios_[i].size()); j++) { std::cerr << static_cast<int>(getSharedData()->illegal_player_ratios_[i][j] * 100) << "% "; }
+            }
+            std::cerr << std::endl;
         }
         std::cerr << std::endl;
     }
@@ -161,6 +167,7 @@ void ActorGroup::initialize()
     createActors();
     running_ = false;
     getSharedData()->do_cpu_job_ = true;
+    getSharedData()->iteration_ = 0;
 
     // create one thread to handle I/O
     commands_.clear();
@@ -248,6 +255,8 @@ void ActorGroup::handleCommand(const std::string& command_prefix, const std::str
     } else if (command_prefix == "start") {
         std::cerr << "[command] " << command << std::endl;
         running_ = true;
+        getSharedData()->iteration_ += 1;
+        getSharedData()->illegal_player_ratios_.push_back(std::vector<float>());
     } else if (command_prefix == "stop") {
         std::cerr << "[command] " << command << std::endl;
         running_ = false;

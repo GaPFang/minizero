@@ -2,6 +2,7 @@
 #include "color_message.h"
 #include "random.h"
 #include "sgf_loader.h"
+#include <iostream>
 #include <random>
 #include <sstream>
 #include <string>
@@ -132,6 +133,7 @@ void GoEnv::reset()
 bool GoEnv::act(const GoAction& action)
 {
     if (!isLegalAction(action)) { return false; }
+    if (!isLegalPlayerAction(action)) { return false; }
 
     const int position = action.getActionID();
     const Player player = action.getPlayer();
@@ -205,12 +207,16 @@ std::vector<GoAction> GoEnv::getLegalActions() const
     return actions;
 }
 
+bool GoEnv::isLegalPlayerAction(const GoAction& action) const
+{
+    return action.getPlayer() == turn_;
+}
+
 bool GoEnv::isLegalAction(const GoAction& action) const
 {
     assert(action.getActionID() >= 0 && action.getActionID() <= board_size_ * board_size_);
     assert(action.getPlayer() == Player::kPlayer1 || action.getPlayer() == Player::kPlayer2);
 
-    if (action.getPlayer() != turn_) { return false; }
     if (isPassAction(action)) { return true; }
 
     const int position = action.getActionID();
