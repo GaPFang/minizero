@@ -133,7 +133,7 @@ void GoEnv::reset()
 bool GoEnv::act(const GoAction& action)
 {
     if (!isLegalAction(action)) { return false; }
-    if (!isLegalPlayerAction(action)) { return false; }
+    if (!isLegalPlayer(action.getPlayer())) { return false; }
 
     const int position = action.getActionID();
     const Player player = action.getPlayer();
@@ -207,9 +207,9 @@ std::vector<GoAction> GoEnv::getLegalActions() const
     return actions;
 }
 
-bool GoEnv::isLegalPlayerAction(const GoAction& action) const
+bool GoEnv::isLegalPlayer(const Player player) const
 {
-    return action.getPlayer() == turn_;
+    return player == turn_;
 }
 
 bool GoEnv::isLegalAction(const GoAction& action) const

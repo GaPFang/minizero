@@ -128,7 +128,7 @@ void SlaveThread::handleSearchDone(int actor_id)
             if (i + 1 < getSharedData()->iteration_) {
                 std::cerr << std::accumulate(getSharedData()->illegal_player_ratios_[i].begin(), getSharedData()->illegal_player_ratios_[i].end(), 0.0f) / getSharedData()->illegal_player_ratios_[i].size() * 100 << "% ";
             } else {
-                for (int j = 0; j < static_cast<int>(getSharedData()->illegal_player_ratios_[i].size()); j++) { std::cerr << static_cast<int>(getSharedData()->illegal_player_ratios_[i][j] * 100) << "% "; }
+                for (int j = std::max(static_cast<int>(getSharedData()->illegal_player_ratios_[i].size() - 10), 0); j < static_cast<int>(getSharedData()->illegal_player_ratios_[i].size()); j++) { std::cerr << static_cast<int>(getSharedData()->illegal_player_ratios_[i][j] * 100) << "% "; }
             }
             std::cerr << std::endl;
         }

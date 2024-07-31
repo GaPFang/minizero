@@ -50,6 +50,7 @@ protected:
     virtual std::string getMCTSPolicy() const = 0;
     virtual std::string getMCTSValue() const = 0;
     virtual std::string getEnvReward() const = 0;
+    virtual std::string getMCTSChange() const = 0;
 
     int nn_evaluation_batch_id_;
     Environment env_;
