@@ -47,6 +47,11 @@ std::vector<Connect6Action> Connect6Env::getLegalActions() const
     return actions;
 }
 
+bool Connect6Env::isLegalPlayer(const Player player) const
+{
+    return player == turn_;
+}
+
 bool Connect6Env::isLegalAction(const Connect6Action& action) const
 {
     int action_id = action.getActionID();
