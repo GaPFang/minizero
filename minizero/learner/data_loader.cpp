@@ -185,11 +185,11 @@ void DataLoaderThread::setMuZeroTrainingData(int batch_index)
         if (step < config::learner_muzero_unrolling_step) {
             tmp = env_loader.getReward(pos + step);
             reward.insert(reward.end(), tmp.begin(), tmp.end());
-
-            // change
-            tmp = env_loader.getChange(pos + step);
-            change.insert(change.end(), tmp.begin(), tmp.end());
         }
+
+        // change
+        tmp = env_loader.getChange(pos + step);
+        change.insert(change.end(), tmp.begin(), tmp.end());
     }
 
     // write data to data_ptr

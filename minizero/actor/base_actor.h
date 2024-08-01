@@ -45,6 +45,8 @@ public:
     std::shared_ptr<MCTS> getMCTS() { return std::static_pointer_cast<MCTS>(search_); }
     const std::shared_ptr<MCTS> getMCTS() const { return std::static_pointer_cast<MCTS>(search_); }
 
+    std::string getChange() { return getMCTSChange(); }
+
 protected:
     virtual std::vector<std::pair<std::string, std::string>> getActionInfo() const;
     virtual std::string getMCTSPolicy() const = 0;

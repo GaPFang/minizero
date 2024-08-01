@@ -36,7 +36,7 @@ class MinizeroDadaLoader:
             self.policy = np.zeros(py.get_batch_size() * (py.get_muzero_unrolling_step() + 1) * py.get_nn_action_size(), dtype=np.float32)
             self.value = np.zeros(py.get_batch_size() * (py.get_muzero_unrolling_step() + 1) * py.get_nn_discrete_value_size(), dtype=np.float32)
             self.reward = np.zeros(py.get_batch_size() * py.get_muzero_unrolling_step() * py.get_nn_discrete_value_size(), dtype=np.float32)
-            self.change = np.zeros(py.get_batch_size() * py.get_muzero_unrolling_step(), dtype=np.float32)
+            self.change = np.zeros(py.get_batch_size() * (py.get_muzero_unrolling_step() + 1), dtype=np.float32)
 
     def load_data(self, training_dir, start_iter, end_iter):
         for i in range(start_iter, end_iter + 1):
@@ -183,7 +183,7 @@ def train(model, training_dir, data_loader, start_iter, end_iter):
         elif py.get_nn_type_name() == "muzero":
             network_output = model.network(features)
             batch_values = network_output['value'].to('cpu').detach().numpy()
-            loss_step_policy, loss_step_value, loss_step_reward, loss_step_change = calculate_loss(network_output, label_policy[:, 0], label_value[:, 0], None, None, loss_scale)
+            loss_step_policy, loss_step_value, loss_step_reward, loss_step_change = calculate_loss(network_output, label_policy[:, 0], label_value[:, 0], None, label_change[:, 0], loss_scale)
             add_training_info(training_info, 'loss_policy_0', loss_step_policy.item())
             add_training_info(training_info, 'accuracy_policy_0', calculate_accuracy(network_output["policy_logit"], label_policy[:, 0], py.get_batch_size()))
             add_training_info(training_info, 'loss_value_0', loss_step_value.item())
@@ -195,7 +195,7 @@ def train(model, training_dir, data_loader, start_iter, end_iter):
                 network_output = model.network(network_output["hidden_state"], action_features[:, i])
                 batch_values = np.concatenate((batch_values, network_output['value'].to('cpu').detach().numpy()), axis=0)
                 loss_step_policy, loss_step_value, loss_step_reward, loss_step_change = calculate_loss(
-                    network_output, label_policy[:, i + 1], label_value[:, i + 1], label_reward[:, i], label_change[:, i], loss_scale)
+                    network_output, label_policy[:, i + 1], label_value[:, i + 1], label_reward[:, i], label_change[:, i + 1], loss_scale)
                 add_training_info(training_info, f'loss_policy_{i+1}', loss_step_policy.item() / py.get_muzero_unrolling_step())
                 add_training_info(training_info, f'accuracy_policy_{i+1}', calculate_accuracy(network_output["policy_logit"], label_policy[:, i + 1], py.get_batch_size()))
                 add_training_info(training_info, f'loss_value_{i+1}', loss_step_value.item() / py.get_muzero_unrolling_step())

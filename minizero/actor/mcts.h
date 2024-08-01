@@ -113,6 +113,8 @@ public:
     inline std::map<float, int>& getTreeValueBound() { return tree_value_bound_; }
     inline const std::map<float, int>& getTreeValueBound() const { return tree_value_bound_; }
 
+    float change_;
+
 protected:
     int legal_parent_node_count_;
     int illegal_player_node_count_;
