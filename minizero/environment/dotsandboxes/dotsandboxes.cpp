@@ -24,6 +24,7 @@ void DotsAndBoxesEnv::reset()
 
     turn_ = Player::kPlayer1;
     current_player_continue_ = false;
+    legal_player_rates_.clear();
     actions_.clear();
 
     /*
@@ -104,6 +105,7 @@ bool DotsAndBoxesEnv::act(const DotsAndBoxesAction& action)
         continue_history_.push_back(Player::kPlayerNone);
         turn_ = getNextPlayer(turn_, kDotsAndBoxesNumPlayer);
     }
+    // std::cerr << playerToChar(turn_) << " ";
     actions_.push_back(action);
     return true;
 }
@@ -137,7 +139,7 @@ bool DotsAndBoxesEnv::isLegalPlayer(const Player player) const
 bool DotsAndBoxesEnv::isLegalAction(const DotsAndBoxesAction& action) const
 {
     if (action.getActionID() < 0 || action.getActionID() >= getPolicySize()) return false;
-    if (action.getPlayer() != turn_) return false;
+    // if (action.getPlayer() != turn_) return false;
     return board_[lineIdxToPos(action.getActionID())] == Grid::kGridNoLine;
 }
 
@@ -458,10 +460,8 @@ std::vector<float> DotsAndBoxesEnvLoader::getActionFeatures(const int pos, utils
     int full_board_size_height = 2 * board_size_ + 1;
     std::vector<float> action_features(num_channels * full_board_size_width * full_board_size_height, 0.0f);
     // throw std::runtime_error{"getActionFeatures(), not implemented"};
-    int action_pos = utils::Random::randInt() % action_features.size();
-    if (pos < static_cast<int>(action_pairs_.size())) {
-        action_pos = 2 * action.getActionID() + 1;
-    }
+    int action_id = ((pos < static_cast<int>(action_pairs_.size())) ? action.getActionID() : utils::Random::randInt() % getPolicySize());
+    int action_pos = 2 * action_id + 1;
     action_features[action_pos] = 1.0f;
     return action_features;
 }

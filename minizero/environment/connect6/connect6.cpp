@@ -60,8 +60,12 @@ bool Connect6Env::isLegalAction(const Connect6Action& action) const
     assert(action_id >= 0 && action_id < board_size_ * board_size_);
     assert(player == Player::kPlayer1 || player == Player::kPlayer2);
 
-    return (player == turn_ &&
-            action_id >= 0 &&
+    // return (player == turn_ &&
+    //         action_id >= 0 &&
+    //         action_id < board_size_ * board_size_ &&
+    //         getPlayerAtBoardPos(action_id) == Player::kPlayerNone);
+
+    return (action_id >= 0 &&
             action_id < board_size_ * board_size_ &&
             getPlayerAtBoardPos(action_id) == Player::kPlayerNone);
 }
